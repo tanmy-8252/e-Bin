@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="tf.css">
+</head>
+<body>
+    <header>
+        <div class="navigationbar">
+            <div class="logo">
+                <a href="waste.html"><img src="WhatsApp Image 2025-09-13 at 09.33.46.jpeg" id="image234"></a>
+            </div>
+            <div class="navigate">
+            <a href="waste.html#about1" style="text-decoration: none; color: #ffffff;" target="_self"><p>About</p></a>
+            <a href="waste.html#team" style="text-decoration: none; color: #ffffff;" target="_self"><p>Team</p></a>
+            <a href="waste.html#news" style="text-decoration: none; color: #ffffff;" target="_self"><p>News</p></a>
+            <a href="waste.html#contact" style="text-decoration: none; color: #ffffff;" target="_self"><p>Contact Us</p></a>
+            </div>
+        </div>
+    </header>
+    <main>
+        <div class="hero_pic"  id="about1">
+            <img src="hero_pic.jpeg" alt="image" id="image123">
+        </div>
+        <div class="hero_div">
+            <div class="about">
+                <h1>About e-Bin</h1>
+                <p>
+                    E-BIN is a smart waste management solution designed to make garbage segregation simple and effective. Our website helps users quickly identify the type of waste they want to dispose of and guides them to the right color-coded bin – green, blue, red – based on government waste segregation standards.
+                    <br>
+                    By making waste disposal easy and accurate, E-BIN encourages responsible habits, reduces landfill waste, and promotes recycling. It is built to create awareness, save time, and contribute to a cleaner, sustainable future.
+                </p>
+            </div>
+        </div>
+    <div class="teachablemachine">
+    <h2>Scan Your Item</h2>
+    <section class="scanner-section">
+    <div id="webcam-container"></div>
+    <button type="button" onclick="startCamera()">Start Camera</button>
+    <button type="button" onclick="stopCamera()">Scan object</button> 
+    <div id="label-container"></div>
+    <div class="colord">
+        <div class="d" id="greend">
+
+        </div>
+        <div class="d" id="blued">
+                
+        </div>
+        <div class="d" id="redd">
+
+        </div>
+        <div class="d" id="blackd">
+
+        </div>
+    </section>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+    <script type="text/javascript">
+        // More API functions here:
+        // https://github.com/googlecreativelab/teachablemachine-community/tree/master/libraries/image
+    
+        // the link to your model provided by Teachable Machine export panel
+        const URL = "https://teachablemachine.withgoogle.com/models/dD90MbBI2/";
+        const greend = document.querySelector("#greend");
+        const redd = document.querySelector("#redd");
+        const blued = document.querySelector("#blued");
+        const blackd = document.querySelector("#blackd");
+
+        let model, webcam, labelContainer, maxPredictions;
+    
+        // Load the image model and setup the webcam
+        async function init() {
+            const modelURL = URL + "model.json";
+            const metadataURL = URL + "metadata.json";
+    
+            // load the model and metadata
+            // Refer to tmImage.loadFromFiles() in the API to support files from a file picker
+            // or files from your local hard drive
+            // Note: the pose library adds "tmImage" object to your window (window.tmImage)
+            model = await tmImage.load(modelURL, metadataURL);
+            maxPredictions = model.getTotalClasses();
+    
+            // Convenience function to setup a webcam
+            const flip = true; // whether to flip the webcam
+            webcam = new tmImage.Webcam(640, 480, flip); // width, height, flip
+            await webcam.setup(); // request access to the webcam
+            await webcam.play();
+            window.requestAnimationFrame(loop);
+    
+            // append elements to the DOM
+            document.getElementById("webcam-container").appendChild(webcam.canvas);
+            labelContainer = document.getElementById("label-container");
+            for (let i = 0; i < maxPredictions; i++) { // and class labels
+                labelContainer.appendChild(document.createElement("div"));
+            }
+        }
+    
+        async function loop() {
+            webcam.update(); // update the webcam frame
+            await predict();
+            window.requestAnimationFrame(loop);
+        }
+
+        let isRunning = false; // track camera status
+// Load model once
+async function initModel() {
+    const modelURL = URL + "model.json";
+    const metadataURL = URL + "metadata.json";
+    model = await tmImage.load(modelURL, metadataURL);
+    maxPredictions = model.getTotalClasses();
+    labelContainer = document.getElementById("label-container");
+}
+
+// Start camera
+async function startCamera() {
+    if (!model) {
+        await initModel();
+    }
+
+    // Always create a new webcam if starting again
+    const flip = true;
+    webcam = new tmImage.Webcam(640, 480, flip);
+    await webcam.setup();
+    await webcam.play();
+
+    isRunning = true;
+
+    const container = document.getElementById("webcam-container");
+    container.innerHTML = ""; // clear old canvas if any
+    container.appendChild(webcam.canvas);
+
+    window.requestAnimationFrame(loop);
+}
+
+// Stop camera
+async function stopCamera() {
+    if (webcam && isRunning) {
+        webcam.stop();
+        isRunning = false;
+    }
+}
+
+async function loop() {
+    if (isRunning) {
+        webcam.update();
+        await predict();
+        window.requestAnimationFrame(loop);
+    }
+}
+    
+        // run the webcam image through the image model
+        async function predict() {
+        const prediction = await model.predict(webcam.canvas);
+        labelContainer.innerHTML = ""; // clear old results
+
+            for (let i = 0; i < maxPredictions; i++) {
+                // Create wrapper div for each class
+                const barContainer = document.createElement("div");
+                barContainer.style.margin = "8px 0";
+
+                // Class name
+                const label = document.createElement("span");
+                label.innerHTML = prediction[i].className + ": ";
+                label.style.display = "inline-block";
+                label.style.width = "80px"; // fixed width for labels
+
+                // Bar background
+                const barBackground = document.createElement("div");
+                barBackground.style.display = "inline-block";
+                barBackground.style.width = "200px";
+                barBackground.style.height = "20px";
+                barBackground.style.background = "#ddd";
+                barBackground.style.borderRadius = "10px";
+                barBackground.style.marginLeft = "10px";
+
+                // Bar fill
+                const barFill = document.createElement("div");
+                barFill.style.height = "100%";
+                barFill.style.width = (prediction[i].probability * 100) + "%";
+                barFill.style.background = "#4CAF50"; // green color
+                barFill.style.borderRadius = "10px";
+
+                // Probability text
+                const probText = document.createElement("span");
+                probText.innerHTML = (prediction[i].probability * 100).toFixed(1) + "%";
+                probText.style.marginLeft = "10px";
+
+                // Put it all together
+                barBackground.appendChild(barFill);
+                barContainer.appendChild(label);
+                barContainer.appendChild(barBackground);
+                barContainer.appendChild(probText);
+
+                labelContainer.appendChild(barContainer);
+            }
+        }
+
+        if ((prediction[i].probability * 100) >= 60) {
+            if (prediction[i].className === "Green") {
+                greend.style.opacity = "1";
+                greend.style.boxShadow = "0 0 20px 0 #00ff00, 0 0 20px 0 #00ff00";
+                redd.style.opacity = "0.5";
+                blued.style.opacity = "0.5";
+                blackd.style.opacity = "0.5";
+            } 
+            else if (prediction[i].className === "Red") {
+                redd.style.opacity = "1";
+                redd.style.boxShadow = "0 0 20px 0 #ff0000, 0 0 20px 0 #ff0000";
+                greend.style.opacity = "0.5";
+                blued.style.opacity = "0.5";
+                blackd.style.opacity = "0.5";
+            }
+            else if (prediction[i].className === "Blue") {
+                blued.style.opacity = "1";
+                blued.style.boxShadow = "0 0 20px 0 #0000ff, 0 0 20px 0 #0000ff";
+                greend.style.opacity = "0.5";
+                redd.style.opacity = "0.5";
+                blackd.style.opacity = "0.5";
+            }
+            else if (prediction[i].className === "Black") {
+                blackd.style.opacity = "1";
+                blackd.style.boxShadow = "0 0 20px 0 #000000, 0 0 20px 0 #000000";
+                greend.style.opacity = "0.5";
+                redd.style.opacity = "0.5";
+                blued.style.opacity = "0.5";
+            }
+            else{
+                blackd.style.opacity = "0.5";
+                greend.style.opacity = "0.5";
+                redd.style.opacity = "0.5";
+                blued.style.opacity = "0.5"; 
+            }
+        }
+    </script>
+    
+    </div>
+    </main>
+    <footer>
+        <div class="footer_content">
+            <div class="footer_logo">
+                <div class="logos">
+                    <div class="logo_bin">
+
+                    </div>
+                    <div class="logo_ait">
+
+                    </div>
+                    <div class="logo_au">
+
+                    </div>
+                </div>
+                <div class="para">
+                    <p>
+                        Our mission is to simplify waste segregation by guiding people to identify their waste and dispose of it in the right bin. By making waste management easy, we aim to promote responsible habits, reduce pollution, and contribute to a cleaner and more sustainable future.
+                    </p>
+                </div>
+                <div class="social_link">
+
+                </div>
+            </div>
+            <div class="Quick_Links">
+                <h2>Quick links</h2>
+                <a href="waste.html#about1" style="text-decoration: none; color: #ffffff;" target="_self"><p>About</p></a>
+                <a href="waste.html#team" style="text-decoration: none; color: #ffffff;" target="_self"><p>Team</p></a>
+                <a href="waste.html#news" style="text-decoration: none; color: #ffffff;" target="_self"><p>News</p></a>
+                <a href="waste.html#contact" style="text-decoration: none; color: #ffffff;" target="_self"><p>Contact Us</p></a>
+            </div>
+            <div class="Contact" id="contact">
+                <div class="contact_logo">
+                    <h2>Contact Information</h2>
+                </div>
+                <div class="contact_mail">
+                    <p>Will be provided soon</p>
+                </div>
+                <div class="contact_address">
+
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer_foot_content">
+            <div class="trademark">
+                <p>© 2025 Smart Dustbin Atria. All rights reserved.</p>
+            </div>
+            <div class="proud">
+                <p>Proudly Representing Atria Institute of Technology</p>
+            </div>
+        </div>
+    </footer> 
+</body>
+</html>

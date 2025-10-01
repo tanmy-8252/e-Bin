@@ -1,0 +1,334 @@
+*{
+    margin : 0;
+    padding : 0;
+    box-sizing : border-box;
+}
+
+html{
+    scroll-behavior: smooth;
+}
+
+/*header*/
+.navigationbar{
+    height: 4rem;
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: rgb(67, 83, 52);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 1;
+    opacity: 0.9;
+}
+
+.navigationbar .logo{
+    height: 3rem;
+    width: 5rem;
+    color: white;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-left: 1rem;
+    cursor: pointer;
+    background-image: url("logo.png");
+    background-size: cover;
+} 
+
+#image234{
+    visibility: hidden ;
+}
+
+.navigationbar .navigate{
+    width: 35vw;
+    color: white;
+    font-size: 1rem;
+    font-weight: 400;
+    margin-left: 1rem;
+    cursor: pointer;
+    display:flex;
+    flex-wrap: nowrap;
+    justify-content: space-evenly;
+}
+
+/*main*/
+
+main{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+#image123{
+    visibility: hidden;
+}
+
+.hero_pic{
+    height: 90vh;
+    width: 100vw;
+    background-image: url("dustbins.jpeg");
+    background-size: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    opacity: 0.8;
+}
+
+.hero_div{
+    height: 90vh;
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    top: 0;
+    left: 0;
+}
+
+.about{
+    height: 50vh;
+    width: 80vw;
+    background-color: #fff;
+    opacity: 0.4;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    top: 0;
+    left: 0;
+    background-color: none;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    margin: 8rem;
+    border-radius: 25px;
+    padding: 5rem;
+    font-size: 2rem;
+}
+
+.teachablemachine{
+    height: 180vh;
+    width: 80vw;
+    background-color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    top: 0;
+    left: 0;
+    background-color: none;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    margin: 2rem;
+    border-radius: 25px;
+    padding: 5rem;
+    font-size: 2rem;
+}
+
+button{
+    background-color: #c2fbd7;
+    border-radius: 100px;
+    box-shadow: rgba(44, 187, 99, .2) 0 -25px 18px -14px inset,rgba(44, 187, 99, .15) 0 1px 2px,rgba(44, 187, 99, .15) 0 2px 4px,rgba(44, 187, 99, .15) 0 4px 8px,rgba(44, 187, 99, .15) 0 8px 16px,rgba(44, 187, 99, .15) 0 16px 32px;
+    cursor: pointer;
+    display: inline-block;
+    font-family: CerebriSans-Regular,-apple-system,system-ui,Roboto,sans-serif;
+    margin: 0.5rem;
+    padding: 7px 20px;
+    text-align: center;
+    color: #ffffff;
+    transition: all 250ms;
+    border: 0;
+    font-size: 32px;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    color: green;
+    text-decoration: none;
+}
+
+button:hover{
+    box-shadow: rgba(44,187,99,.35) 0 -25px 18px -14px inset,rgba(44,187,99,.25) 0 1px 2px,rgba(44,187,99,.25) 0 2px 4px,rgba(44,187,99,.25) 0 4px 8px,rgba(44,187,99,.25) 0 8px 16px,rgba(44,187,99,.25) 0 16px 32px;
+    transform: scale(1.05) rotate(-1deg);
+}
+
+.scanner-section {
+    padding: 30px;
+    background: linear-gradient(to right, #c3eb3e, #0db025);
+    color: white;
+    text-align: center;
+    height: 150vh;
+    width: 70vw;
+    border-radius: 25px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+#webcam-container {
+    position: relative;
+    width: 100%;
+    max-width: 640px;
+    margin: 0 auto;
+    border-radius: 25px;
+}
+
+#label-container{
+    height: 30vh;
+    width: 40vw;
+    margin-top: 40px;
+    font-size: 2rem;
+    font-weight: bold;
+    color: #333;
+    text-align: center;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    border-radius: 25px;
+}
+
+.colord{
+    height: 100vh;
+    width: 60vw;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: nowrap;
+}
+
+.d{
+    height: 40vh;
+    width: 15vw;
+    box-shadow:rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
+    margin: 0.5rem;
+    border-radius: 25px;
+}
+
+#greend{
+    background-image: url(Dust2.jpg);
+    background-size: cover;
+}
+
+#blued{
+    background-image: url(Dust3.jpg);
+    background-size: cover;
+}
+
+#redd{
+    background-image: url(Dust1.jpg);
+    background-size: cover;
+}
+
+#blackd{
+    background-image: url(download\ \(1\).png);
+    background-size: cover;
+}
+
+/*footer*/
+.footer_content{
+    height: 50vh;
+    background-color: #579497;
+    color: white;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.footer_logo{
+    height: 50vh;
+    width: 40vw;
+    margin: 2rem;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: left;
+}
+
+.logos{
+    height: 19vh;
+    width: 49vw;
+    margin: 0.1rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+    align-items: center;
+}
+
+.logo_bin{
+    height: 10vh;
+    width: 10vw;
+    margin: 0.1rem;
+    background-image: url(logo.png);
+    background-size: cover;
+}
+
+.logo_ait{
+    height: 15vh;
+    width: 8vw;
+    margin: 0.1rem;
+    background-image: url(atria.png);
+    background-size: cover;
+}
+
+.logo_au{
+    height: 14vh;
+    width: 18vw;
+    margin: 0.1rem;
+    background-image: url(au.png);
+    background-size: cover;
+}
+
+.para{
+    height: 19vh;
+    width: 35vw;
+    margin: 0.1rem;
+    font-size: 1.2rem;
+    text-align: left;
+    line-height: 1.5rem;
+}
+
+.social_link{
+    height: 9vh;
+    width: 39vw;
+    margin: 0.1rem;
+}
+
+.Quick_Links{
+    height: 50vh;
+    width: 30vw;
+    margin: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    line-height: 3rem;
+    padding-top: 1rem;
+}
+
+.Contact{
+    height: 50vh;
+    width: 30vw;
+    margin: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+    line-height: 4rem; 
+    padding-top: 1rem;
+}  
+ /* footer foot div */
+.footer_foot_content{
+    height: 10vh;
+    width: 100vw;
+    background-color: rgb(6, 77, 136);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 1rem;
+    padding-left: 4rem;
+    padding-right: 4rem;
+}

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="tf.css">
+</head>
+<body>
+    <header>
+        <div class="navigationbar">
+            <div class="logo">
+                <a href="waste.html"><img src="WhatsApp Image 2025-09-13 at 09.33.46.jpeg" id="image234"></a>
+            </div>
+            <div class="navigate">
+            <a href="#about1" style="text-decoration: none; color: #ffffff;" target="_self"><p>About</p></a>
+            <a href="#team" style="text-decoration: none; color: #ffffff;" target="_self"><p>Team</p></a>
+            <a href="#news" style="text-decoration: none; color: #ffffff;" target="_self"><p>News</p></a>
+            <a href="#contact" style="text-decoration: none; color: #ffffff;" target="_self"><p>Contact Us</p></a>
+            </div>
+        </div>
+    </header>
+    <main>
+        <div class="hero_pic"  id="about1">
+            <img src="hero_pic.jpeg" alt="image" id="image123">
+        </div>
+        <div class="hero_div">
+            <div class="about">
+                <h1>About e-Bin</h1>
+                <p>
+                    E-BIN is a smart waste management solution designed to make garbage segregation simple and effective. Our website helps users quickly identify the type of waste they want to dispose of and guides them to the right color-coded bin – green, blue, red – based on government waste segregation standards.
+                    <br>
+                    By making waste disposal easy and accurate, E-BIN encourages responsible habits, reduces landfill waste, and promotes recycling. It is built to create awareness, save time, and contribute to a cleaner, sustainable future.
+                </p>
+            </div>
+        </div>
+    <div class="teachablemachine">
+    <h2>Scan Your Item</h2>
+    <section class="scanner-section">
+    <div id="webcam-container"></div>
+    <button type="button" onclick="startCamera()">Start Camera</button>
+    <button type="button" onclick="stopCamera()">Scan object</button> 
+    <div id="label-container"></div>
+    <div class="colord">
+        <div class="d" id="greend">
+
+        </div>
+        <div class="d" id="blued">
+                
+        </div>
+        <div class="d" id="redd">
+
+        </div>
+        <div class="d" id="blackd">
+
+        </div>
+    </section>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+<script>
+const URL = "https://teachablemachine.withgoogle.com/models/dD90MbBI2/";
+let model, webcam, maxPredictions;
+let isRunning = false;
+let loopId = null; // track requestAnimationFrame
+
+const greend = document.querySelector("#greend");
+const redd   = document.querySelector("#redd");
+const blued  = document.querySelector("#blued");
+const blackd = document.querySelector("#blackd");
+const labelContainer = document.getElementById("label-container");
+
+// Load model once
+async function initModel() {
+    if (!model) {
+        const modelURL = URL + "model.json";
+        const metadataURL = URL + "metadata.json";
+        model = await tmImage.load(modelURL, metadataURL);
+        maxPredictions = model.getTotalClasses();
+    }
+}
+
+// Start camera
+async function startCamera() {
+    await initModel();
+
+    // stop previous webcam & loop if exists
+    if (webcam) {
+        stopCamera();
+    }
+
+    webcam = new tmImage.Webcam(640, 480, true);
+    await webcam.setup();
+    await webcam.play();
+    document.getElementById("webcam-container").innerHTML = "";
+    document.getElementById("webcam-container").appendChild(webcam.canvas);
+
+    isRunning = true;
+    loopId = requestAnimationFrame(loop);
+}
+
+// Stop camera
+function stopCamera() {
+    if (webcam) {
+        webcam.stop();
+        webcam = null;
+    }
+    if (loopId) {
+        cancelAnimationFrame(loopId);
+        loopId = null;
+    }
+    isRunning = false;
+
+    // reset dustbin highlights
+    [greend, redd, blued, blackd].forEach(bin => {
+        bin.style.opacity = "0.5";
+        bin.style.boxShadow = "none";
+    });
+}
+
+// Main loop
+async function loop() {
+    if (!isRunning || !webcam) return;
+
+    webcam.update();
+    await predict();
+
+    loopId = requestAnimationFrame(loop);
+}
+
+// Prediction + bar graph + bin highlight
+async function predict() {
+    if (!model) return;
+
+    const prediction = await model.predict(webcam.canvas);
+    labelContainer.innerHTML = "";
+
+    // reset bins
+    [greend, redd, blued, blackd].forEach(bin => {
+        bin.style.opacity = "0.5";
+        bin.style.boxShadow = "none";
+    });
+
+    for (let i = 0; i < maxPredictions; i++) {
+        // BAR GRAPH
+        const barContainer = document.createElement("div");
+        barContainer.style.margin = "8px 0";
+
+        const label = document.createElement("span");
+        label.innerHTML = prediction[i].className + ": ";
+        label.style.display = "inline-block";
+        label.style.width = "80px";
+
+        const barBackground = document.createElement("div");
+        barBackground.style.display = "inline-block";
+        barBackground.style.width = "200px";
+        barBackground.style.height = "20px";
+        barBackground.style.background = "#ddd";
+        barBackground.style.borderRadius = "10px";
+        barBackground.style.marginLeft = "10px";
+
+        const barFill = document.createElement("div");
+        barFill.style.height = "100%";
+        barFill.style.width = (prediction[i].probability * 100) + "%";
+        barFill.style.background = "#4CAF50";
+        barFill.style.borderRadius = "10px";
+
+        const probText = document.createElement("span");
+        probText.innerHTML = (prediction[i].probability * 100).toFixed(1) + "%";
+        probText.style.marginLeft = "10px";
+
+        barBackground.appendChild(barFill);
+        barContainer.appendChild(label);
+        barContainer.appendChild(barBackground);
+        barContainer.appendChild(probText);
+        labelContainer.appendChild(barContainer);
+
+        // ==== BIN HIGHLIGHT ====
+        if ((prediction[i].probability * 100) >= 60) {
+            if (prediction[i].className === "Green") {
+                greend.style.opacity = "1";
+                greend.style.boxShadow = "0 0 20px 0 #00ff00";
+            } else if (prediction[i].className === "Red") {
+                redd.style.opacity = "1";
+                redd.style.boxShadow = "0 0 20px 0 #ff0000";
+            } else if (prediction[i].className === "Blue") {
+                blued.style.opacity = "1";
+                blued.style.boxShadow = "0 0 20px 0 #0000ff";
+            } else if (prediction[i].className === "Black") {
+                blackd.style.opacity = "1";
+                blackd.style.boxShadow = "0 0 20px 0 #000000";
+            }
+        }
+    }
+}
+</script>
+    </script>
+    
+    </div>
+    </main>
+    <footer>
+        <div class="footer_content">
+            <div class="footer_logo">
+                <div class="logos">
+                    <div class="logo_bin">
+
+                    </div>
+                    <div class="logo_ait">
+
+                    </div>
+                    <div class="logo_au">
+
+                    </div>
+                </div>
+                <div class="para">
+                    <p>
+                        Our mission is to simplify waste segregation by guiding people to identify their waste and dispose of it in the right bin. By making waste management easy, we aim to promote responsible habits, reduce pollution, and contribute to a cleaner and more sustainable future.
+                    </p>
+                </div>
+                <div class="social_link">
+
+                </div>
+            </div>
+            <div class="Quick_Links">
+                <h2>Quick links</h2>
+                <a href="waste.html#about1" style="text-decoration: none; color: #ffffff;" target="_self"><p>About</p></a>
+                <a href="waste.html#team" style="text-decoration: none; color: #ffffff;" target="_self"><p>Team</p></a>
+                <a href="waste.html#news" style="text-decoration: none; color: #ffffff;" target="_self"><p>News</p></a>
+                <a href="waste.html#contact" style="text-decoration: none; color: #ffffff;" target="_self"><p>Contact Us</p></a>
+            </div>
+            <div class="Contact" id="contact">
+                <div class="contact_logo">
+                    <h2>Contact Information</h2>
+                </div>
+                <div class="contact_mail">
+                    <p>Will be provided soon</p>
+                </div>
+                <div class="contact_address">
+
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer_foot_content">
+            <div class="trademark">
+                <p>© 2025 Smart Dustbin Atria. All rights reserved.</p>
+            </div>
+            <div class="proud">
+                <p>Proudly Representing Atria Institute of Technology</p>
+            </div>
+        </div>
+    </footer> 
+</body>
+</html>
